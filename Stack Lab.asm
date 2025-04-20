@@ -130,12 +130,13 @@ YESPEEK LDR R0, R6, #0      ; Place the peeked value into R0
 ISEMPTY ST R1, SAVER1       ; Save R1
         LD R1, NEGSB        ; Checking if it's empty
         ADD R1, R6, R1      ; If R6 - STACKBASE
-        BRp NOTEMPTY        ; If there are items in the stack check if too full
-        ADD R5, R5, #1      ; Set flag to fail
+        BRz SEMPTY          ; If there are items in the stack
+        AND R5, R5, #0      ; Set flag to fail (ie not empty)
+        ADD R5, R5, #1      
         LD R1, SAVER1       ; Restore variables
         RET                 ; Return to program
         
-NOTEMPTY AND R5, R5, #0     ; Set flag to success
+SEMPTY  AND R5, R5, #0      ; Set flag to success (ie empty)
         LD R1, SAVER1       ; Restore variables
         RET                 ; Return to program
         
