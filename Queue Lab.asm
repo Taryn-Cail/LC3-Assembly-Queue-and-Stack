@@ -74,12 +74,13 @@ CONTINUE NOT R2, R3     ; Compute - (head) into R2
         STR R0, R4, #0  ; Store value into Queue
         ADD R4, R1, #0  ; Move tail to the new position from R1
         AND R5, R5, #0  ; Flag R5=0 for successful
-        LD R1, SAVER1   ; Restore R1 and R2
+        LD R1, SAVER1   ; Restore variables
         LD R2, SAVER2
         RET             ; Return to the program
 
-FULLQ   ADD R5, R5, #1  ; Flag R5 = 1 to indicate fail, full queue
-        LD R1, SAVER1   ; Restore R1 and R2
+FULLQ   AND R5, R5, #0
+        ADD R5, R5, #1  ; Flag R5 = 1 to indicate fail, full queue
+        LD R1, SAVER1   ; Restore variables
         LD R2, SAVER2
         RET             ; Return to the program
 
@@ -96,9 +97,10 @@ DEQUEUE ST R1, SAVER1
         ADD R1, R1, #1
         ADD R1, R1, R4  ; Compute tail -head into R1
         BRnp YESDEQ     ; if head ==tail, queue is empty
-        
+
+        AND R5, R5, #0
         ADD R5, R5, #1  ; Flag R5 FOR FAIL
-        LD R1, SAVER1   ; Restore R1
+        LD R1, SAVER1   ; Restore variables
         RET             ; Return to program
         
 YESDEQ  LDR R0, R3, #0  ; Load value into Head
@@ -107,16 +109,10 @@ YESDEQ  LDR R0, R3, #0  ; Load value into Head
         LD R1, NEGQBASE ; Load the negative base
         ADD R1, R3, R1  ; If head - qbase
         BRnp DONEQ      ; Does NOT equal 0 then done
-        LD R3, QLIMIT  ; Otherwise reset the head to the limit
+        LD R3, QLIMIT   ; Otherwise reset the head to the limit
         
-DONEQ   LD R1, SAVER1   ; Restore R1
-        RET             ; Return to the program
-
-        ADD R3, R3, #1  ; Increment the head
-        
-        ; Check for overflow
-        
-        STR R0, R3, #0  ; Place value into R0
+DONEQ   AND R5, R5, #0  ; Flaf successful    
+        LD R1, SAVER1   ; Restore variables
         RET             ; Return to the program
 
 ;*************************************************************************
@@ -133,11 +129,11 @@ ISEMPTY ST R1, SAVER1
         ADD R1, R1, R5  ; Tail - Head
         BRnp NOTEMPTY   ; If it results in anything but zero, not empty
         ADD R5, R5, #1  ; Add one to R5 for, FAIL ie empty
-        LD R1, SAVER1  ; Restore R1
+        LD R1, SAVER1   ; Restore variables
         RET             ; Return to program
 
-NOTEMPTY AND R5, R5, #0  ; Set flag to 0, succesful ie empty
-        LD R1, SAVER1   ; Restore R1
+NOTEMPTY AND R5, R5, #0 ; Set flag to 0, succesful ie empty
+        LD R1, SAVER1   ; Restore variables
         RET             ; Return to program
 
         
