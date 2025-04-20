@@ -59,16 +59,17 @@ X       .FILL #1
 ENQUEUE ST R1, SAVER1
         ST R2, SAVER2
         
-        ADD R1, R4, #1  ; Place tail +1 into R1
+        ADD R1, R4, #1  ; Place (tail + 1) into R1
         LD R2, NEGQBASE ; Load -QBASE into R2
-        ADD R1, R1, R2  ; (Tail + 1) - QBase into R2
+        ADD R2, R1, R2  ; (Tail + 1) - QBase into R2
         BRz WRAP        ; If (tail + 1) == QBASE wrap around
         BR CONTINUE     ; Otherwise continue
 
 WRAP    LD R1, QLIMIT   ; Set tail to QLIMIT
+        ADD R1, R1, #1  ; Tail + 1
 CONTINUE NOT R2, R3     ; Compute - (head) into R2
         ADD R2, R2, #1
-        ADD R2, R2, R1  ; (tail +1) - head
+        ADD R2, R2, R1  ; (tail + 1) - head
         BRz FULLQ       ; If (tail + 1) == head full queue
         
         STR R0, R4, #0  ; Store value into Queue
@@ -95,7 +96,7 @@ FULLQ   AND R5, R5, #0
 DEQUEUE ST R1, SAVER1
         NOT R1, R3      ; Compute -head INTO R1
         ADD R1, R1, #1
-        ADD R1, R1, R4  ; Compute tail -head into R1
+        ADD R1, R1, R4  ; Compute tail - head into R1
         BRnp YESDEQ     ; if head ==tail, queue is empty
 
         AND R5, R5, #0
@@ -103,7 +104,7 @@ DEQUEUE ST R1, SAVER1
         LD R1, SAVER1   ; Restore variables
         RET             ; Return to program
         
-YESDEQ  LDR R0, R3, #0  ; Load value into Head
+YESDEQ  LDR R0, R3, #0  ; Load value from head into R0
         ADD R3, R3, #1  ; Increment head
         
         LD R1, NEGQBASE ; Load the negative base
@@ -111,7 +112,7 @@ YESDEQ  LDR R0, R3, #0  ; Load value into Head
         BRnp DONEQ      ; Does NOT equal 0 then done
         LD R3, QLIMIT   ; Otherwise reset the head to the limit
         
-DONEQ   AND R5, R5, #0  ; Flaf successful    
+DONEQ   AND R5, R5, #0  ; Flag successful    
         LD R1, SAVER1   ; Restore variables
         RET             ; Return to the program
 
@@ -124,15 +125,16 @@ DONEQ   AND R5, R5, #0  ; Flaf successful
 ;**************************************************************************
 
 ISEMPTY ST R1, SAVER1
-        NOT R1, R3      ; 2's complement head pointer INTO R1
+        NOT R1, R3      ; -head into R1
         ADD R1, R1, #1  
-        ADD R1, R1, R5  ; Tail - Head
+        ADD R1, R1, R4  ; Tail - Head
         BRnp NOTEMPTY   ; If it results in anything but zero, not empty
-        ADD R5, R5, #1  ; Add one to R5 for, FAIL ie empty
+        AND R5, R5, #0
+        ADD R5, R5, #1  ; Add one to R5 for, fail (ie not empty)
         LD R1, SAVER1   ; Restore variables
         RET             ; Return to program
 
-NOTEMPTY AND R5, R5, #0 ; Set flag to 0, succesful ie empty
+QEMPTY  AND R5, R5, #0 ; Set flag to 0, succesful (ie empty)
         LD R1, SAVER1   ; Restore variables
         RET             ; Return to program
 
