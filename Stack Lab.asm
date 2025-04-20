@@ -60,13 +60,15 @@ PUSH    ST R1, SAVER1       ; Save R1
         LD  R1, NEGSL       ; Load STACKLIMIT into R1
         ADD R1, R6, R1      ; If R6 - STACKLIMIT 
         BRzp    YESPUSH     ; If there is space push the variable
+        AND R5, R5, #0
         ADD R5, R5, #1      ; If not set R5 == 1 the flag
+        LD R1, SAVER1       ; Restore variables
         RET                 ; Return to Program
 
 YESPUSH ADD R6, R6, #-1     ; Move "top" (R6) - 1
         STR R0, R6, #0      ; Place number into address stored in R6 + 0
         AND R5, R5, #0      ; Set R5 == 0, flag for successful push
-        LD  R1, SAVER1      ; Restore R1
+        LD  R1, SAVER1      ; Restore variables
         RET                 ; Return to Program
 
 
@@ -83,13 +85,15 @@ POP     ST R1, SAVER1       ; Save R1
         LD R1, NEGSB        ; Load STACKBASE into R1
         ADD R1, R6, R1      ; If R6 - STACKBASE
         BRp     YESPOP      ; If there are items in the stack then pop
+        AND R5, R5, #0
         ADD R5, R5, #1      ; If not set R5 == 1 the flag
+        LD R1, SAVER1       ; Restore variables
         RET                 ; Return to Program
         
 YESPOP  LDR R0, R6, #0      ; Place the popped value into R0
         ADD, R6, R6, #1     ; Move the pointer "down"
         AND, R5, R5, #0     ; Set R5 == 0, flag for successful pop
-        LD R1, SAVER1       ; Restore R1
+        LD R1, SAVER1       ; Restore variables
         RET                 ; Return to the program
 
 
@@ -102,17 +106,19 @@ YESPOP  LDR R0, R6, #0      ; Place the popped value into R0
 ;* Uses R0 and R1 in the method, flags R5 as 1 if the pop fails, and 0
 ;* if it is successful.
 ;**************************************************************************
-PEEK    ST R1, SAVER1       ; Save R1
+PEEK    ST R1, SAVER1       ; Save variables
         LD R1, NEGSB        ; Load STACKBASE into R1
         ADD R1, R6, R1      ; If R6 - STACKBASE
         BRp     YESPEEK     ; If there are items in the stack then peek
+        AND R5, R5, #0
         ADD R5, R5, #1      ; If not set R5 == 1 the flag
+        LD R1, SAVER1       ; Restore variables
         RET                 ; Return to Program
         
 YESPEEK LDR R0, R6, #0      ; Place the peeked value into R0
         AND R5, R5, #0      ; Set R5 == 0, flag for succcessful peek
-        LD R1, SAVER1       ; Restore R1
-        RET
+        LD R1, SAVER1       ; Restore variables
+        RET                 ; Return to program
 
 ;*************************************************************************
 ;* isEmpty Subroutine
@@ -126,9 +132,11 @@ ISEMPTY ST R1, SAVER1       ; Save R1
         ADD R1, R6, R1      ; If R6 - STACKBASE
         BRp NOTEMPTY        ; If there are items in the stack check if too full
         ADD R5, R5, #1      ; Set flag to fail
+        LD R1, SAVER1       ; Restore variables
         RET                 ; Return to program
         
 NOTEMPTY AND R5, R5, #0     ; Set flag to success
+        LD R1, SAVER1       ; Restore variables
         RET                 ; Return to program
         
         
