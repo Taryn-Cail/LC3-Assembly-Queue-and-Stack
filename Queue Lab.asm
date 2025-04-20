@@ -128,7 +128,7 @@ ISEMPTY ST R1, SAVER1
         NOT R1, R3      ; -head into R1
         ADD R1, R1, #1  
         ADD R1, R1, R4  ; Tail - Head
-        BRnp NOTEMPTY   ; If it results in anything but zero, not empty
+        BRz QEMPTY      ; If it results in zero, it is empty
         AND R5, R5, #0
         ADD R5, R5, #1  ; Add one to R5 for, fail (ie not empty)
         LD R1, SAVER1   ; Restore variables
