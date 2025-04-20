@@ -11,6 +11,8 @@
 ; Start program
         .ORIG x3000
 
+        LD R6, STACKBASE ; Initialize stack
+
         LD R2, N
         AND R3, R3, #0  ; i variable
         
