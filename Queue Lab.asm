@@ -71,9 +71,9 @@ CONTINUE NOT R2, R3     ; Compute - (head) into R2
         ADD R2, R2, #1
         ADD R2, R2, R1  ; (tail + 1) - head
         BRz FULLQ       ; If (tail + 1) == head full queue
-        
-        STR R0, R4, #0  ; Store value into Queue
+
         ADD R4, R1, #0  ; Move tail to the new position from R1
+        STR R0, R4, #0  ; Store value into Queue
         AND R5, R5, #0  ; Flag R5=0 for successful
         LD R1, SAVER1   ; Restore variables
         LD R2, SAVER2
